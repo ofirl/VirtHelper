@@ -5,12 +5,21 @@
 // ==/UserScript==
 
 // Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings
-let supplySparesPercent = 0.1;
+let storeSupplySparesPercent = 0.1;
 
 console.log('VirtAutomation script running!');
 
 // Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals
-let tabMenu = document.querySelector('.tabu');
+let tabMenu = document.querySelector('ul.tabu');
+
+let subdivisionType = document.querySelector('ul.tabu > li:nth-child(2) > a');
+if (subdivisionType)
+    subdivisionType = subdivisionType.innerHTML.trim();
+
+let selectedTab = document.querySelector('ul.tabu li.sel a');
+if (selectedTab)
+    selectedTab = selectedTab.getAttribute('data-name').match(/--(.*)/)[1];
+
 let automationMenu;
 let currentOpenSubMenus = [];
 
@@ -25,32 +34,42 @@ let currentSubdivisionInfo = getSubdivisionInfo(subdivisionId);
 
 // Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants
 let automationOptions = {
-    sale: [
-        {
-            text: 'Set all prices',
-            subMenu: 'price',
-        }
-    ],
-    trading_hall: [
-        {
-            text: 'Update data',
-            func: (e) => {
-                e.preventDefault();
-                updateTradeHallData();
-                return false;
+    Warehouse: {
+        sale: [
+            {
+                text: 'Set all prices',
+                subMenu: 'price',
             }
-        }
-    ],
-    supply: [
-        {
-            text: 'Calculate Orders',
-            func: (e) => {
-                e.preventDefault();
-                calculateOrders();
-                return false;
+        ],
+        supply: [
+            {
+                text: 'Calculate orders',
+                func: calculateWarehouseSupplyOrders,
             }
-        }
-    ],
+        ]
+    },
+    Store: {
+        trading_hall: [
+            {
+                text: 'Update data',
+                func: (e) => {
+                    e.preventDefault();
+                    updateTradeHallData();
+                    return false;
+                }
+            }
+        ],
+        supply: [
+            {
+                text: 'Calculate Orders',
+                func: (e) => {
+                    e.preventDefault();
+                    calculateStoreSupplyOrders();
+                    return false;
+                }
+            }
+        ],
+    }
 };
 
 let subMenus = {
@@ -61,7 +80,7 @@ let subMenus = {
                 text: 'Prime cost',
                 func: (e) => {
                     e.preventDefault();
-                    setPrice('primeCost');
+                    setSalePrice('primeCost');
                     closeSubMenu('Price');
                     return false;
                 }
@@ -82,13 +101,14 @@ function createNewElement(tag = 'div', attrs = {}, parent = null) {
     for (let attr in attrs)
         newElement[attr] = attrs[attr];
 
-    parent.appendChild(newElement);
+    if (parent)
+        parent.appendChild(newElement);
 
     return newElement;
 }
 
 function getSelectedTab() {
-    return document.querySelector('.tabu .sel a').getAttribute('data-name').match(/--(.*)/)[1];
+    return document.querySelector('ul.tabu li.sel a').getAttribute('data-name').match(/--(.*)/)[1];
 }
 
 function openSubMenu(subMenu) {
@@ -185,11 +205,11 @@ function updateSubdivisionInfo(id, updatedObj) {
 
 // Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers
 
-function getAutomationOptions(tab) {
-    return automationOptions[tab];
+function getAutomationOptions() {
+    return automationOptions[subdivisionType][selectedTab];
 }
 
-function setPrice(price) {
+function setSalePrice(price) {
     // normal case - price is a number
     let targetPrice = price;
 
@@ -226,7 +246,7 @@ function updateTradeHallData() {
     updateSubdivisionInfo(subdivisionId, currentSubdivisionInfo);
 }
 
-function calculateOrders() {
+function calculateStoreSupplyOrders() {
     // sanity check
     if (!currentSubdivisionInfo) {
         alert('No saved data found, update trade hall data first');
@@ -243,7 +263,7 @@ function calculateOrders() {
         if (!productInfo)
             return;
 
-        let orderAmount = productInfo.salesVolume * (1 + supplySparesPercent) - productInfo.inStock;
+        let orderAmount = productInfo.salesVolume * (1 + storeSupplySparesPercent) - productInfo.inStock;
         if (orderAmount > parseInt(quantityInput.value))
             row.querySelector('td[id^="quantityField"] input').value = orderAmount;
         else
@@ -255,10 +275,38 @@ function calculateOrders() {
     updateSubdivisionInfo(subdivisionId, currentSubdivisionInfo);
 }
 
+function calculateWarehouseSupplyOrders() {
+
+}
+
+function addPriceQualityRatio() {
+    let headerRowMarkerElement = document.querySelector('table[class^="unit-list"] > thead > tr > th:nth-child(5)');
+    let headerRatio = createNewElement('th', { innerHTML: 'Ratio' });
+    headerRowMarkerElement.after(headerRatio);
+
+    let rows = document.querySelectorAll('table[class^="unit-list"] > tbody > tr[id^="r"]');
+
+    rows.forEach(row => {
+        let price = row.querySelector('td:nth-child(6)').innerText;
+        console.log(price)
+        price = parseFloat(price.substr(1, price.length - 1).replace(" ", ""));
+
+        let quality = row.querySelector('td:nth-child(7)').innerHTML;
+        quality = parseFloat(quality.replace(" ", ""));
+
+        let ratio = parseFloat((quality / price).toFixed(3));
+
+        let qualityElement = row.querySelector('td:nth-child(7)');
+
+        let ratioElement = createNewElement('td', { innerHTML: ratio });
+        qualityElement.after(ratioElement);
+    });
+}
+
 // Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic
 
 function addAutomationMenu() {
-    let automationMenuOptions = getAutomationOptions(getSelectedTab())
+    let automationMenuOptions = getAutomationOptions()
 
     if (!automationMenuOptions)
         return;
@@ -267,4 +315,10 @@ function addAutomationMenu() {
     automationMenu = addMenu('Automation', automationMenuOptions);
 }
 
-addAutomationMenu();
+if (tabMenu) {
+    addAutomationMenu();
+}
+
+if (window.location.href.match(/.*unit\/supply\/.*\/step2/)) {
+    addPriceQualityRatio();
+}
