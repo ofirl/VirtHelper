@@ -29,7 +29,6 @@ let automationOptions = {
         {
             text: 'Set all prices',
             subMenu: 'price',
-            // func: () => setPrice('primeCost')
         }
     ],
     trading_hall: [
@@ -239,12 +238,14 @@ function calculateOrders() {
     rows.forEach(row => {
         let name = row.querySelector('th table tbody tr:first-child td img').alt.trim();
         let productInfo = currentSubdivisionInfo.tradeHall[name];
+        let quantityInput = row.querySelector('td[id^="quantityField"] input');
 
         if (!productInfo)
             return;
 
         let orderAmount = productInfo.salesVolume * (1 + supplySparesPercent) - productInfo.inStock;
-        row.querySelector('td[id^="quantityField"] input').value = orderAmount;
+        if (orderAmount > parseInt(quantityInput.value))
+            row.querySelector('td[id^="quantityField"] input').value = orderAmount;
     });
 }
 
