@@ -4,6 +4,9 @@
 // @grant    none
 // ==/UserScript==
 
+// Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings
+let supplySparesPercent = 0.1;
+
 console.log('VirtAutomation script running!');
 
 // Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals
@@ -11,8 +14,14 @@ let tabMenu = document.querySelector('.tabu');
 let automationMenu;
 let currentOpenSubMenus = [];
 
+let subdivisionId = window.location.href.match(/\d{7}/);
+if (subdivisionId && subdivisionId.length)
+    subdivisionId = subdivisionId[0];
+
 if (!localStorage.getItem('subdivisionInfo'))
     localStorage.setItem('subdivisionInfo', '{}');
+
+let currentSubdivisionInfo = getSubdivisionInfo(subdivisionId);
 
 // Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants
 let automationOptions = {
@@ -29,6 +38,16 @@ let automationOptions = {
             func: (e) => {
                 e.preventDefault();
                 updateTradeHallData();
+                return false;
+            }
+        }
+    ],
+    supply: [
+        {
+            text: 'Calculate Orders',
+            func: (e) => {
+                e.preventDefault();
+                calculateOrders();
                 return false;
             }
         }
@@ -149,6 +168,22 @@ function addMenu(title, options, ) {
     return newMenu;
 }
 
+// State -- State -- State -- State -- State -- State -- State -- State -- State -- State -- State -- State -- State -- State -- State -- State -- State
+
+function getSubdivisionInfo(id) {
+    return JSON.parse(localStorage.getItem('subdivisionInfo') || '{}')[id];
+}
+
+function updateSubdivisionInfo(id, updatedObj) {
+    let currentValue = localStorage.getItem('subdivisionInfo');
+    currentValue = JSON.parse(currentValue);
+    currentValue[id] = updatedObj;
+
+    localStorage.setItem('subdivisionInfo', JSON.stringify(currentValue));
+
+    currentSubdivisionInfo = getSubdivisionInfo(subdivisionId);
+}
+
 // Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers
 
 function getAutomationOptions(tab) {
@@ -174,17 +209,12 @@ function setPrice(price) {
 }
 
 function updateTradeHallData() {
-    // get subdivision id
-    let subdivisionId = window.location.href.match(/\d{7}/);
-    if (subdivisionId && subdivisionId.length)
-        subdivisionId = subdivisionId[0];
-
-    // product processing
+    // process products
     let tradeHall = {};
-    let rows = document.querySelectorAll('form[name="tradingHallForm"] table.grid tbody tr:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3))');
+    let rows = document.querySelectorAll('form[name="tradingHallForm"] table.grid tbody tr:nth-child(n+4)');
     rows.forEach(row => {
         let title = row.querySelector('td:nth-child(3)').title;
-        title = title.substr(0, title.indexOf('(') - 1);
+        title = title.substr(0, title.indexOf('(') - 1).trim();
         let salesVolume = parseInt(row.querySelector('td:nth-child(4) > a').innerHTML.replace(" ", ""));
         let inStock = parseInt(row.querySelector('td:nth-child(6)').innerHTML.replace(" ", ""));
 
@@ -193,20 +223,29 @@ function updateTradeHallData() {
 
     let currentSubdivisionInfo = getSubdivisionInfo(subdivisionId);
     currentSubdivisionInfo.tradeHall = tradeHall;
-    console.log(currentSubdivisionInfo)
+
     updateSubdivisionInfo(subdivisionId, currentSubdivisionInfo);
 }
 
-function getSubdivisionInfo(id) {
-    return JSON.parse(localStorage.getItem('subdivisionInfo')[id] || '{}');
-}
+function calculateOrders() {
+    // sanity check
+    if (!currentSubdivisionInfo) {
+        alert('No saved data found, update trade hall data first');
+        return;
+    }
 
-function updateSubdivisionInfo(id, updatedObj) {
-    let currentValue = localStorage.getItem('subdivisionInfo');
-    currentValue = JSON.parse(currentValue);
-    currentValue[id] = updatedObj;
+    // process products
+    let rows = document.querySelectorAll('table.list tbody tr:nth-child(n+5)[id^="product_row"]');
+    rows.forEach(row => {
+        let name = row.querySelector('th table tbody tr:first-child td img').alt.trim();
+        let productInfo = currentSubdivisionInfo.tradeHall[name];
 
-    localStorage.setItem('subdivisionInfo', JSON.stringify(currentValue));
+        if (!productInfo)
+            return;
+
+        let orderAmount = productInfo.salesVolume * (1 + supplySparesPercent) - productInfo.inStock;
+        row.querySelector('td[id^="quantityField"] input').value = orderAmount;
+    });
 }
 
 // Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic
