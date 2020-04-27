@@ -6,14 +6,32 @@
 
 console.log('VirtAutomation script running!');
 
+// Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals -- Globals
+let tabMenu = document.querySelector('.tabu');
+let automationMenu;
+let currentOpenSubMenus = [];
+
 // Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants
 let automationOptions = {
     sale: [
         {
-            text: 'Set all prices to prime cost',
-            func: () => setPrice('primeCost')
+            text: 'Set all prices',
+            subMenu: 'price',
+            // func: () => setPrice('primeCost')
         }
-    ]
+    ],
+};
+
+let subMenus = {
+    price: {
+        title: 'Price',
+        options: [
+            {
+                text: 'Prime cost',
+                func: () => { setPrice('primeCost'); closeSubMenu('Price'); return false; }
+            }
+        ]
+    },
 };
 
 // DOM Utilities -- DOM Utilities -- DOM Utilities -- DOM Utilities -- DOM Utilities -- DOM Utilities -- DOM Utilities -- DOM Utilities -- DOM Utilities
@@ -37,7 +55,78 @@ function getSelectedTab() {
     return document.querySelector('.tabu .sel a').getAttribute('data-name').match(/--(.*)/)[1]
 }
 
-// Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers -- Helpers
+function openSubMenu(subMenu) {
+    if (currentOpenSubMenus.find((m) => m.name === subMenu.title))
+        return;
+
+    subMenu = subMenus[subMenu];
+
+    let newMenu = addMenu(subMenu.title, subMenu.options);
+    currentOpenSubMenus.push({ name: subMenu.title, element: newMenu });
+
+    return false;
+}
+
+function closeSubMenu(subMenuName) {
+    let menuIndex = currentOpenSubMenus.findIndex((m) => m.name === subMenuName);
+    let menusToClose = currentOpenSubMenus.splice(menuIndex, currentOpenSubMenus.length - menuIndex);
+
+    menusToClose.forEach(menu => {
+        menu.element.remove();
+    });
+}
+
+// DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers
+
+function addClass(element, className) {
+    if (element.classList.includes(className))
+        return;
+
+    element.classList.add(className);
+}
+
+function removeClass(element, className) {
+    if (!element.classList.includes(className))
+        return;
+
+    element.classList.remove(className);
+}
+
+function menuMouseOver(e) {
+    e.target.closest('li.sub').querySelector('a').classList.add('sel');
+    e.target.closest('li.sub').querySelector('ul.sub').classList.add('db');
+}
+
+function menuMouseOut(e) {
+    let target = event.toElement || event.relatedTarget;
+    console.log(target);
+    if (target.closest('li.sub') === this || target === this) {
+        return;
+    }
+
+    e.target.closest('li.sub').querySelector('a.sel').classList.remove('sel');
+    e.target.closest('li.sub').querySelector('ul.sub.db').classList.remove('db');
+}
+
+function addMenu(title, options, ) {
+    // create the automation menu
+    let newMenu = createNewElement('li', { classList: "sub", onmouseenter: menuMouseOver, onmouseout: menuMouseOut }, tabMenu);
+    createNewElement('a', { href: "#", innerHTML: title }, newMenu);
+
+    // create the automation menu items
+    let menuItems = createNewElement('ul', { classList: 'sub' }, newMenu);
+
+    options.forEach(option => {
+        let menuItem = createNewElement('li', {}, menuItems);
+        createNewElement('a', { classList: "tabs", href: "#", innerHTML: option.text, onclick: option.func ? option.func : () => openSubMenu(option.subMenu) }, menuItem);
+    });
+
+
+    return newMenu;
+}
+
+// Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers -- Logic Helpers
+
 function getAutomationOptions(tab) {
     return automationOptions[tab];
 }
@@ -53,7 +142,7 @@ function setPrice(price) {
             let primeCost = row.querySelector(':nth-child(4) table tbody tr:nth-child(3) td:nth-child(2)').innerHTML;
             primeCost = primeCost.substr(1, primeCost.length - 1);
 
-            targetPrice = parseFloat(primeCost);
+            targetPrice = parseFloat(primeCost.replace(" ", ""));
         }
 
         row.querySelector(':nth-child(7) input').value = targetPrice;
@@ -68,20 +157,9 @@ function addAutomationMenu() {
     if (!automationMenuOptions)
         return;
 
-    let tabMenu = document.querySelector('.tabu');
-
     // create the automation menu
-    let automationMenu = createNewElement('li', { classList: "sub" }, tabMenu);
-    createNewElement('a', { href: "#", innerHTML: "Automation" }, automationMenu);
-
-    // create the automation menu items
-    let automationMenuItems = createNewElement('ul', { classList: 'sub' }, automationMenu);
-    let menuItem;
-
-    automationMenuOptions.forEach(option => {
-        menuItem = createNewElement('li', {}, automationMenuItems);
-        createNewElement('a', { href: "#", classList: "tabs", innerHTML: option.text, onclick: option.func }, menuItem);
-    });
+    automationMenu = addMenu('Automation', automationMenuOptions);
+    console.log(automationMenu);
 }
 
 addAutomationMenu();
