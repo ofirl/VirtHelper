@@ -11,6 +11,9 @@ let tabMenu = document.querySelector('.tabu');
 let automationMenu;
 let currentOpenSubMenus = [];
 
+if (!localStorage.getItem('subdivisionInfo'))
+    localStorage.setItem('subdivisionInfo', '{}');
+
 // Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants -- Constants
 let automationOptions = {
     sale: [
@@ -18,6 +21,16 @@ let automationOptions = {
             text: 'Set all prices',
             subMenu: 'price',
             // func: () => setPrice('primeCost')
+        }
+    ],
+    trading_hall: [
+        {
+            text: 'Update data',
+            func: (e) => {
+                e.preventDefault();
+                updateTradeHallData();
+                return false;
+            }
         }
     ],
 };
@@ -28,7 +41,12 @@ let subMenus = {
         options: [
             {
                 text: 'Prime cost',
-                func: () => { setPrice('primeCost'); closeSubMenu('Price'); return false; }
+                func: (e) => {
+                    e.preventDefault();
+                    setPrice('primeCost');
+                    closeSubMenu('Price');
+                    return false;
+                }
             }
         ]
     },
@@ -52,14 +70,13 @@ function createNewElement(tag = 'div', attrs = {}, parent = null) {
 }
 
 function getSelectedTab() {
-    return document.querySelector('.tabu .sel a').getAttribute('data-name').match(/--(.*)/)[1]
+    return document.querySelector('.tabu .sel a').getAttribute('data-name').match(/--(.*)/)[1];
 }
 
 function openSubMenu(subMenu) {
-    if (currentOpenSubMenus.find((m) => m.name === subMenu.title))
-        return;
-
     subMenu = subMenus[subMenu];
+    if (currentOpenSubMenus.find((m) => m.name === subMenu.title))
+        return false;
 
     let newMenu = addMenu(subMenu.title, subMenu.options);
     currentOpenSubMenus.push({ name: subMenu.title, element: newMenu });
@@ -99,7 +116,6 @@ function menuMouseOver(e) {
 
 function menuMouseOut(e) {
     let target = event.toElement || event.relatedTarget;
-    console.log(target);
     if (target.closest('li.sub') === this || target === this) {
         return;
     }
@@ -111,14 +127,22 @@ function menuMouseOut(e) {
 function addMenu(title, options, ) {
     // create the automation menu
     let newMenu = createNewElement('li', { classList: "sub", onmouseenter: menuMouseOver, onmouseout: menuMouseOut }, tabMenu);
-    createNewElement('a', { href: "#", innerHTML: title }, newMenu);
+    createNewElement('a', {
+        href: "#",
+        innerHTML: title
+    }, newMenu);
 
     // create the automation menu items
     let menuItems = createNewElement('ul', { classList: 'sub' }, newMenu);
 
     options.forEach(option => {
         let menuItem = createNewElement('li', {}, menuItems);
-        createNewElement('a', { classList: "tabs", href: "#", innerHTML: option.text, onclick: option.func ? option.func : () => openSubMenu(option.subMenu) }, menuItem);
+        createNewElement('a', {
+            classList: "tabs",
+            href: "#",
+            innerHTML: option.text,
+            onclick: option.func ? option.func : (e) => { e.preventDefault(); return openSubMenu(option.subMenu); }
+        }, menuItem);
     });
 
 
@@ -149,6 +173,42 @@ function setPrice(price) {
     });
 }
 
+function updateTradeHallData() {
+    // get subdivision id
+    let subdivisionId = window.location.href.match(/\d{7}/);
+    if (subdivisionId && subdivisionId.length)
+        subdivisionId = subdivisionId[0];
+
+    // product processing
+    let tradeHall = {};
+    let rows = document.querySelectorAll('form[name="tradingHallForm"] table.grid tbody tr:not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3))');
+    rows.forEach(row => {
+        let title = row.querySelector('td:nth-child(3)').title;
+        title = title.substr(0, title.indexOf('(') - 1);
+        let salesVolume = parseInt(row.querySelector('td:nth-child(4) > a').innerHTML.replace(" ", ""));
+        let inStock = parseInt(row.querySelector('td:nth-child(6)').innerHTML.replace(" ", ""));
+
+        tradeHall[title] = { salesVolume, inStock };
+    });
+
+    let currentSubdivisionInfo = getSubdivisionInfo(subdivisionId);
+    currentSubdivisionInfo.tradeHall = tradeHall;
+    console.log(currentSubdivisionInfo)
+    updateSubdivisionInfo(subdivisionId, currentSubdivisionInfo);
+}
+
+function getSubdivisionInfo(id) {
+    return JSON.parse(localStorage.getItem('subdivisionInfo')[id] || '{}');
+}
+
+function updateSubdivisionInfo(id, updatedObj) {
+    let currentValue = localStorage.getItem('subdivisionInfo');
+    currentValue = JSON.parse(currentValue);
+    currentValue[id] = updatedObj;
+
+    localStorage.setItem('subdivisionInfo', JSON.stringify(currentValue));
+}
+
 // Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic
 
 function addAutomationMenu() {
@@ -159,7 +219,6 @@ function addAutomationMenu() {
 
     // create the automation menu
     automationMenu = addMenu('Automation', automationMenuOptions);
-    console.log(automationMenu);
 }
 
 addAutomationMenu();
