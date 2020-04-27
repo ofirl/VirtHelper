@@ -246,7 +246,13 @@ function calculateOrders() {
         let orderAmount = productInfo.salesVolume * (1 + supplySparesPercent) - productInfo.inStock;
         if (orderAmount > parseInt(quantityInput.value))
             row.querySelector('td[id^="quantityField"] input').value = orderAmount;
+        else
+            orderAmount = parseInt(quantityInput.value);
+
+        productInfo.orderAmount = orderAmount;
     });
+
+    updateSubdivisionInfo(subdivisionId, currentSubdivisionInfo);
 }
 
 // Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic -- Main Logic
