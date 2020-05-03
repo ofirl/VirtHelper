@@ -1,6 +1,7 @@
 const globals = require('./globals');
 const DOMUtils = require('./utils/DOMUtils');
 const menuOptions = require('./automation/menuOptions');
+const storageUtils = require('./utils/storageUtils');
 
 console.log('VirtAutomation script running!');
 
@@ -38,9 +39,16 @@ function addAutomationMenu() {
     automationMenu = DOMUtils.addMenu('Automation', automationMenuOptions);
 }
 
-if (globals.tabMenu) {
-    addAutomationMenu();
+if (storageUtils.isMaintenanceMode()) {
+    let maintenanceFunc = menuOptions.getAutomationOptions(true);
+    if (maintenanceFunc && maintenanceFunc(true))
+        window.close();
 }
-else if (window.location.href.match(/.*unit\/supply\/.*\/step2/)) {
-    addPriceQualityRatio();
+else {
+    if (globals.tabMenu) {
+        addAutomationMenu();
+    }
+    else if (window.location.href.match(/.*unit\/supply\/.*\/step2/)) {
+        addPriceQualityRatio();
+    }
 }

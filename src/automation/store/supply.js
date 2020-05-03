@@ -1,6 +1,12 @@
 const consts = require('../../consts');
+const storageUtils = require('../../utils/storageUtils');
 
-function calculateStoreSupplyOrders() {
+function calculateStoreSupplyOrders(maintenance = false) {
+    if (maintenance && storageUtils.getMaintenance()) {
+        storageUtils.updateMaintenance({ ok: true });
+        return;
+    }
+
     // process products
     let productTable = document.querySelectorAll('table.list');
     let rows = productTable.querySelectorAll('tbody tr:nth-child(n+5)[id^="product_row"]');
@@ -19,10 +25,15 @@ function calculateStoreSupplyOrders() {
         let orderAmount = productInfo.amountSold * (1 + consts.storeOverStockPercent) - (productInfo.amountInStock - productInfo.amountSold);
         if (orderAmount < 0)
             orderAmount = 0;
+
         quantityInput.value = orderAmount;
     });
 
+    if (maintenance)
+        storageUtils.updateMaintenance({ doneMaintenance: true });
+
     productTable.querySelector('input[type="submit"][name="applyChanges"]').click();
+    return !maintenance;
 }
 
 module.exports = {

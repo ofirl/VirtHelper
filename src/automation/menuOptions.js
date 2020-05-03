@@ -36,12 +36,17 @@ let automationOptions = {
         //         }
         //     }
         // ],
-        supply: [
-            {
-                text: 'Calculate Orders',
-                func: menuClick(storeSupply.calculateStoreSupplyOrders)
-            }
-        ],
+        supply: {
+            maintenance: () => {
+
+            },
+            options: [
+                {
+                    text: 'Calculate Orders',
+                    func: menuClick(storeSupply.calculateStoreSupplyOrders)
+                }
+            ]
+        },
     },
     Enterprise: {
         "unit_list": [
@@ -53,8 +58,17 @@ let automationOptions = {
     }
 };
 
-function getAutomationOptions() {
-    return automationOptions[globals.subdivisionType][globals.selectedTab];
+function getAutomationOptions(maintenance = false) {
+    let optionsObj = automationOptions[globals.subdivisionType];
+    if (optionsObj)
+        optionsObj = optionsObj[globals.selectedTab];
+    if (!optionsObj)
+        return null;
+
+    if (maintenance)
+        return optionsObj.maintenance;
+
+    return optionsObj.options;
 }
 
 module.exports = {
