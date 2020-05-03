@@ -1,6 +1,7 @@
 const globals = require('../globals');
-const storeSupply = require('./store/supply');
 const enterpriseUnitList = require('./enterprise/unitList');
+const storeSupply = require('./store/supply');
+const warehouseSupply = require('./warehouse/supply');
 
 function menuClick(func) {
     return (e) => {
@@ -18,12 +19,17 @@ let automationOptions = {
         //         subMenu: 'price',
         //     }
         // ],
-        // supply: [
-        //     {
-        //         text: 'Calculate orders',
-        //         func: menuClick(calculateWarehouseSupplyOrders),
-        //     }
-        // ]
+        supply: {
+            maintenance: (arg) => {
+                return warehouseSupply.calculateWarehouseSupplyOrders(arg);
+            },
+            options: [
+                {
+                    text: 'Calculate Orders',
+                    func: menuClick(warehouseSupply.calculateWarehouseSupplyOrders)
+                }
+            ]
+        },
     },
     Store: {
         // trading_hall: [
@@ -37,8 +43,21 @@ let automationOptions = {
         //     }
         // ],
         supply: {
-            maintenance: () => {
-
+            maintenance: (arg) => {
+                return storeSupply.calculateStoreSupplyOrders(arg);
+            },
+            options: [
+                {
+                    text: 'Calculate Orders',
+                    func: menuClick(storeSupply.calculateStoreSupplyOrders)
+                }
+            ]
+        },
+    },
+    "Gas station": {
+        supply: {
+            maintenance: (arg) => {
+                return storeSupply.calculateStoreSupplyOrders(arg);
             },
             options: [
                 {

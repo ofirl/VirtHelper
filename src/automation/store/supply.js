@@ -1,10 +1,14 @@
 const consts = require('../../consts');
 const storageUtils = require('../../utils/storageUtils');
+const virtUtils = require('../../utils/virtonomicsUtils');
 
 function calculateStoreSupplyOrders(maintenance = false) {
-    if (maintenance && storageUtils.getMaintenance()) {
-        storageUtils.updateMaintenance({ ok: true });
-        return;
+    if (maintenance) {
+        let maintenanceObj = storageUtils.getMaintenance();
+        if (maintenanceObj && maintenanceObj.doneMaintenance) {
+            storageUtils.updateMaintenance({ ...maintenanceObj, ok: true });
+            return true;
+        }
     }
 
     // process products
@@ -12,15 +16,16 @@ function calculateStoreSupplyOrders(maintenance = false) {
     let rows = productTable.querySelectorAll('tbody tr:nth-child(n+5)[id^="product_row"]');
     rows.forEach(row => {
         let name = row.querySelector('th table tbody tr:first-child td img').alt.trim();
-        // let productInfo = currentSubdivisionInfo.tradeHall[name];
-        console.log(name);
         let productInfo = {};
         ['amountInStock', 'quality', 'brand', 'primeCost', 'amountSold'].forEach((a, idx) => {
-            productInfo[a] = parseFloat(row.querySelector(`:scope > td:nth-child(2) > table > tbody > tr:nth-child(${idx + 1}) > td:nth-child(2)`)
-                .innerText.replace(" ", "").replace("$", ""));
+            productInfo[a] = virtUtils.parseVirtNum(
+                row.querySelector(`:scope > td:nth-child(2) > table > tbody > tr:nth-child(${idx + 1}) > td:nth-child(2)`)
+                    .innerText);
         });
-        console.log(productInfo);
         let quantityInput = row.querySelector('td[id^="quantityField"] input');
+
+        if (productInfo.amountInStock === 0 && productInfo.amountSold === 0)
+            return;
 
         let orderAmount = productInfo.amountSold * (1 + consts.storeOverStockPercent) - (productInfo.amountInStock - productInfo.amountSold);
         if (orderAmount < 0)
@@ -33,6 +38,7 @@ function calculateStoreSupplyOrders(maintenance = false) {
         storageUtils.updateMaintenance({ doneMaintenance: true });
 
     productTable.querySelector('input[type="submit"][name="applyChanges"]').click();
+
     return !maintenance;
 }
 

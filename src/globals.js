@@ -13,6 +13,10 @@ let subdivisionId = window.location.href.match(/\d{7}/);
 if (subdivisionId && subdivisionId.length)
     subdivisionId = subdivisionId[0];
 
+let subdivisionName = document.querySelector('div.title > h1');
+if (subdivisionName)
+    subdivisionName = subdivisionName.innerText.split(' ')[0];
+
 let selectedTab = tabMenu ? tabMenu.querySelector('li.sel a') : null;
 if (selectedTab)
     selectedTab = selectedTab.getAttribute('data-name').match(/--(.*)/)[1];
@@ -27,6 +31,7 @@ module.exports = {
     tabMenu,
     subdivisionType,
     subdivisionId,
+    subdivisionName,
     selectedTab,
     automationMenu,
     currentOpenSubMenus,
