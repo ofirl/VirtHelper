@@ -1,0 +1,27 @@
+{
+  "name": "virthelper",
+  "version": "1.0.0",
+  "description": "Helper script for virtonomics",
+  "main": "VirtHelper.js",
+  "scripts": {
+    "bundle": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ofirl/VirtHelper.git"
+  },
+  "keywords": [
+    "virtonomics"
+  ],
+  "author": "ofirl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ofirl/VirtHelper/issues"
+  },
+  "homepage": "https://github.com/ofirl/VirtHelper#readme",
+  "devDependencies": {
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}
