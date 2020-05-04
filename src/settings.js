@@ -1,5 +1,6 @@
 const consts = require('./consts');
 const storageUtils = require('./utils/storageUtils');
+const DOMUtils = require('./utils/DOMUtils');
 
 if (!localStorage.getItem(consts.settingsItemKey))
     localStorage.setItem(consts.settingsItemKey, '{}');
@@ -41,6 +42,8 @@ function getSettings() {
 }
 
 function openSettingsPopup() {
+    let currentSettings = getSettings();
+
     let mainContent = document.querySelector('div#mainContent');
     mainContent.innerHTML += `
     <div class="modal fade bs-modal-lg in" role="dialog" style="z-index: 1040; display: block; padding-right: 17px;" id="settings-modal">
@@ -74,31 +77,33 @@ function openSettingsPopup() {
 
 
 
-
-                            <div class="flex-item">
-                                <h4>Over stock percentage:</h4>
-                                <ul class="list-group vir-list-group-strypes mt-compact">
-                                    <li class="list-group-item bg-success">
-                                        Store
-                                        <input type="text" id="store-over-stock-input" class="form-control input-xsmall pull-right mono" value="0.2">
-                                        <input type="range" id="store-over-stock-range" class="" min="0" max="10" step="0.1" value="0.2">
-                                    </li>
-                                    <li class="list-group-item bg-success">
-                                        Gas station
-                                        <input type="text" id="gasStation-over-stock-input" class="form-control input-xsmall pull-right mono" value="0.2">
-                                        <input type="range" id="gasStation-over-stock-range" class="" min="0" max="10" step="0.1" value="0.2">
-                                    </li
-                                    <li class="list-group-item bg-success">
-                                        Restaurant
-                                        <input type="text" id="restaurant-over-stock-input" class="form-control input-xsmall pull-right mono" value="0.2">
-                                        <input type="range" id="restaurant-over-stock-range" class="" min="0" max="10" step="0.1" value="0.2">
-                                    </li>
-                                    <li class="list-group-item bg-success">
-                                        Warehouse
-                                        <input type="text" id="warehouse-over-stock-input" class="form-control input-xsmall pull-right mono" value="0.2">
-                                        <input type="range" id="warehouse-over-stock-range" class="" min="0" max="10" step="0.1" value="0.2">
-                                    </li>
-                                </ul>
+                            <div class="flex-container flex-2cols">
+                                <div class="flex-item">
+                                    <h4>Over stock percentage:</h4>
+                                    <ul class="list-group vir-list-group-strypes mt-compact">
+                                        ${DOMUtils.createSettingsInputSlider('li', 'Store', 'overStock', 0, 10, 0.1, currentSettings.overStockPercent.Store).outerHTML}
+                                        <li class="list-group-item">
+                                            Restaurant
+                                            <input type="text" id="restaurant-over-stock-input" class="form-control input-xsmall pull-right mono" value="0.2">
+                                            <input type="range" id="restaurant-over-stock-range" class="" min="0" max="10" step="0.1" value="0.2">
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="flex-item">
+                                    <h4>&nbsp;</h4>
+                                    <ul class="list-group vir-list-group-strypes mt-compact">
+                                        <li class="list-group-item">
+                                            Warehouse
+                                            <input type="text" id="warehouse-over-stock-input" class="form-control input-xsmall pull-right mono" value="0.2">
+                                            <input type="range" id="warehouse-over-stock-range" class="" min="0" max="10" step="0.1" value="0.2">
+                                        </li>
+                                        <li class="list-group-item">
+                                            Gas station
+                                            <input type="text" id="gas-station-over-stock-input" class="form-control input-xsmall pull-right mono" value="0.2">
+                                            <input type="range" id="gas-station-over-stock-range" class="" min="0" max="10" step="0.1" value="0.2">
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
 
 

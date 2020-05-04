@@ -36,8 +36,6 @@ function closeSubMenu(subMenuName) {
     });
 }
 
-// DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers -- DOM Helpers
-
 function addClass(element, className) {
     if (element.classList.includes(className))
         return;
@@ -92,6 +90,60 @@ function addMenu(title, options, ) {
     return newMenu;
 }
 
+function onInputSliderChange(e, otherElement) {
+    console.log(e.target);
+    let newValue = parseFloat(e.target.value);
+    if (isNaN(newValue))
+        e.target.value = otherElement.value;
+    else
+        otherElement.value = newValue;
+}
+
+/**
+ * @param {string} tag 
+ * @param {string} label 
+ * @param {string} category 
+ * @param {number} sliderMin 
+ * @param {number} sliderMax 
+ * @param {number} sliderStep 
+ * @param {number} sliderValue 
+ */
+function createSettingsInputSlider(tag, label, category, sliderMin = 0, sliderMax = 10, sliderStep = 0.1, sliderValue = 5) {
+    // `Store
+    // <input type="text" id="store-over-stock-input" class="form-control input-xsmall pull-right mono" value="0.2">
+    // <input type="range" id="store-over-stock-range" class="" min="0" max="10" step="0.1" value="0.2">`
+    let inputSlider = createNewElement(tag, { innerText: label, class: "list-group-item" });
+
+    let input;
+    let slider;
+
+    input = createNewElement('input', {
+        type: 'text',
+        id: `${label.toLowerCase().replace(" ", "")}-${category.toLowerCase()}-input`,
+        classList: 'form-control input-xsmall pull-right mono',
+        defaultValue: sliderValue,
+        onchange: (e) => onInputSliderChange(e, slider),
+    }, inputSlider);
+
+    slider = createNewElement('input', {
+        type: 'range',
+        id: `${label.toLowerCase().replace(" ", "")}-${category.toLowerCase()}-range`,
+        min: sliderMin,
+        max: sliderMax,
+        step: sliderStep,
+        defaultValue: sliderValue,
+        onchange: (e) => onInputSliderChange(e, input),
+    }, inputSlider);
+
+    console.log(input);
+    setTimeout(() => console.log(input.value), 3000); //no
+    setTimeout(() => console.log(input.value), 6000); //no
+    setTimeout(() => console.log(document.querySelector(`#${label.toLowerCase().replace(" ", "")}-${category.toLowerCase()}-input`).value), 6000); //yes, why???? refrences?
+    setTimeout(input.addEventListener('change', (e) => onInputSliderChange(e, slider)), 1000);
+
+    return inputSlider;
+}
+
 module.exports = {
     createNewElement,
     getSelectedTab,
@@ -100,4 +152,5 @@ module.exports = {
     addClass,
     removeClass,
     addMenu,
+    createSettingsInputSlider,
 }
