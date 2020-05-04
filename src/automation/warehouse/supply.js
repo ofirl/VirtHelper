@@ -45,14 +45,7 @@ function calculateWarehouseSupplyOrders(maintenance = false) {
         if (problem)
             errors.push(`Possible problem at <a href="${window.location.href}">${globals.subdivisionName}</a> with the product ${productName}`);
 
-        console.log(contractsOrdersAmount);
-        console.log(amountInStock);
-        let orderAmount = contractsOrdersAmount * (1 + consts.warehouseOverStockPercent) - (amountInStock - contractsOrdersAmount);
-        if (orderAmount < 0)
-            orderAmount = 0;
-
-        orderAmountInput.value = orderAmount;
-        // console.log(row);
+        virtUtils.setOrderAmount(contractsOrdersAmount, amountInStock, orderAmountInput);
     });
 
     if (maintenance)

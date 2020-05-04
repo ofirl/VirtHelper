@@ -1,6 +1,7 @@
 const globals = require('../globals');
 const enterpriseUnitList = require('./enterprise/unitList');
 const storeSupply = require('./store/supply');
+const restaurantSupply = require('./restaurant/supply');
 const warehouseSupply = require('./warehouse/supply');
 
 function menuClick(func) {
@@ -63,6 +64,19 @@ let automationOptions = {
                 {
                     text: 'Calculate Orders',
                     func: menuClick(storeSupply.calculateStoreSupplyOrders)
+                }
+            ]
+        },
+    },
+    Restaurant: {
+        supply: {
+            maintenance: (arg) => {
+                return restaurantSupply.calculateSupplyOrders(arg);
+            },
+            options: [
+                {
+                    text: 'Calculate Orders',
+                    func: menuClick(restaurantSupply.calculateSupplyOrders)
                 }
             ]
         },

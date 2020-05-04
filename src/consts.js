@@ -1,6 +1,9 @@
 // Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings
-let storeOverStockPercent = 0.2; // Store extra stock
-let warehouseOverStockPercent = 0.5; // Warehouse extra stock
+let overStockPercent = { // extra stock
+    Store: 0.2,
+    Restaurant: 0.2,
+    Warehouse: 0.5,
+};
 
 // Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings
 // Might break the script!!! Change only if you know what you are doing!!!
@@ -15,8 +18,7 @@ let unitTypeMaintenancePages = {
 };
 
 module.exports = {
-    storeOverStockPercent,
-    warehouseOverStockPercent,
+    overStockPercent,
     storageItemKey,
     unitTypeMaintenancePages,
     unitMaintenanceOrder,

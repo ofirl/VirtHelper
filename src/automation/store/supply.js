@@ -12,26 +12,30 @@ function calculateStoreSupplyOrders(maintenance = false) {
     }
 
     // process products
-    let productTable = document.querySelectorAll('table.list');
+    let productTable = document.querySelector('table.list');
     let rows = productTable.querySelectorAll('tbody tr:nth-child(n+5)[id^="product_row"]');
+
     rows.forEach(row => {
         let name = row.querySelector('th table tbody tr:first-child td img').alt.trim();
         let productInfo = {};
         ['amountInStock', 'quality', 'brand', 'primeCost', 'amountSold'].forEach((a, idx) => {
             productInfo[a] = virtUtils.parseVirtNum(
                 row.querySelector(`:scope > td:nth-child(2) > table > tbody > tr:nth-child(${idx + 1}) > td:nth-child(2)`)
-                    .innerText);
+                    .innerText
+            );
         });
+
         let quantityInput = row.querySelector('td[id^="quantityField"] input');
 
+        // no sales and no stock - new subdivision
         if (productInfo.amountInStock === 0 && productInfo.amountSold === 0)
             return;
 
-        let orderAmount = productInfo.amountSold * (1 + consts.storeOverStockPercent) - (productInfo.amountInStock - productInfo.amountSold);
-        if (orderAmount < 0)
-            orderAmount = 0;
+        // no sales - if it's the second turn it's ok, otherwise it's bad
+        if (productInfo.amountSold === 0)
+            return;
 
-        quantityInput.value = orderAmount;
+        virtUtils.setOrderAmount(productInfo.amountSold, productInfo.amountInStock, quantityInput);
     });
 
     if (maintenance)
