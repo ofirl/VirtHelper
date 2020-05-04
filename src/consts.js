@@ -1,6 +1,7 @@
 // Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings -- Settings
 let overStockPercent = { // extra stock
     Store: 0.2,
+    "Gas station": 0.2,
     Restaurant: 0.2,
     Warehouse: 0.5,
 };
