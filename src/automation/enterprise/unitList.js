@@ -9,11 +9,12 @@ function maintainUnits() {
     unitRows.forEach(row => {
         let unitLink = row.querySelector(':scope > td:nth-child(2) > a');
         let unitUrl = unitLink.href;
+        let unitName = unitLink.innerText.trim();
         let unitId = unitUrl.match(/(\d{7})/)[0];
         let unitType = unitLink.querySelector(':scope span').getAttribute('data-content').trim();
 
         maintenanceMode[unitId] = { ok: null, msg: null };
-        urls.push({ id: unitId, url: unitUrl, type: unitType });
+        urls.push({ id: unitId, name: unitName, url: unitUrl, type: unitType });
     });
 
     storageUtils.updateStorage({ maintenanceMode });
@@ -51,6 +52,7 @@ function maintainUnits() {
         }
 
         // maintenance is done
+        storageUtils.updateStorage({ maintenanceMode: null });
         //TODO: remove running icon
     }
 

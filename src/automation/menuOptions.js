@@ -68,12 +68,14 @@ let automationOptions = {
         },
     },
     Enterprise: {
-        "unit_list": [
-            {
-                text: 'Maintenance',
-                func: menuClick(enterpriseUnitList.maintainUnits)
-            }
-        ]
+        "unit_list": {
+            options: [
+                {
+                    text: 'Maintenance',
+                    func: menuClick(enterpriseUnitList.maintainUnits)
+                }
+            ]
+        }
     }
 };
 
