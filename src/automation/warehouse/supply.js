@@ -1,5 +1,5 @@
-const consts = require('../../consts');
 const globals = require('../../globals');
+const storageUtils = require('../../utils/storageUtils');
 const virtUtils = require('../../utils/virtonomicsUtils');
 
 function calculateWarehouseSupplyOrders(maintenance = false) {
@@ -17,7 +17,6 @@ function calculateWarehouseSupplyOrders(maintenance = false) {
     let errors = [];
 
     productRowsTitle.forEach(row => {
-        // console.log(row);
         let productName = row.querySelector(':scope > td:nth-child(1) > div > div > strong').innerText.trim();
         let amountInStock = virtUtils.parseVirtNum(
             row.querySelector(':scope > td:nth-child(1) > div:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2) > strong')

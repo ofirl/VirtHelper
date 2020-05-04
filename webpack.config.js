@@ -16,19 +16,21 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'virtHelperDist.js'
     },
-    // optimization: {
-    //     minimizer: [
-    //         new UglifyJsPlugin({
-    //             uglifyOptions: {
-    //                 output: {
-    //                     beautify: false,
-    //                     preamble: banner,
-    //                 },
-    //             },
-    //         }),
-    //     ],
-    // },
     plugins: [
         new webpack.BannerPlugin({ banner: banner, raw: true, entryOnly: true })
     ],
+    // module: {
+    //     rules: [
+    //         {
+    //             test: /\.js$/,
+    //             exclude: /(node_modules|bower_components)/,
+    //             use: {
+    //                 loader: 'babel-loader',
+    //                 options: {
+    //                     presets: ['@babel/preset-env']
+    //                 }
+    //             }
+    //         }
+    //     ]
+    // }
 };

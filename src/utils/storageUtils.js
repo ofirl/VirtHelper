@@ -16,7 +16,7 @@ function isMaintenanceMode(id) {
     id = id || globals.subdivisionId;
 
     let state = getStorage();
-    return state.maintenanceMode && state.maintenanceMode[id].ok == null;
+    return state.maintenanceMode && state.maintenanceMode[id] && state.maintenanceMode[id].ok == null;
 }
 
 function getMaintenance() {
@@ -36,10 +36,21 @@ function updateMaintenance(maintenanceObj) {
     updateStorage(state);
 }
 
+function getSettingsObj() {
+    return JSON.parse(localStorage.getItem(consts.settingsItemKey));
+}
+
+function updateSettingsObj(settingsObj) {
+    settingsObj = { ...getSettingsObj(), ...settingsObj };
+    localStorage.setItem(consts.settingsItemKey, JSON.stringify(settingsObj));
+}
+
 module.exports = {
     updateStorage,
     getStorage,
     isMaintenanceMode,
     getMaintenance,
     updateMaintenance,
+    getSettingsObj,
+    updateSettingsObj,
 };

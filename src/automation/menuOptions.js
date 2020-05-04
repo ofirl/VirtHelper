@@ -83,9 +83,10 @@ let automationOptions = {
     },
     Enterprise: {
         "unit_list": {
+            startup: enterpriseUnitList.startup,
             options: [
                 {
-                    text: 'Maintenance',
+                    text: 'Run unit maintenance',
                     func: menuClick(enterpriseUnitList.maintainUnits)
                 }
             ]
@@ -99,6 +100,8 @@ function getAutomationOptions(maintenance = false) {
         optionsObj = optionsObj[globals.selectedTab];
     if (!optionsObj)
         return null;
+
+    optionsObj.startup && optionsObj.startup();
 
     if (maintenance)
         return optionsObj.maintenance;

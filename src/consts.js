@@ -8,10 +8,11 @@ let overStockPercent = { // extra stock
 
 // Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings
 // Might break the script!!! Change only if you know what you are doing!!!
-let unitMaintenanceOrder = ['Store', 'Warehouse'];
+let unitMaintenanceOrder = ['Store', 'Gas station', 'Warehouse'];
 
 // Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts
 let storageItemKey = 'VirtHelper';
+let settingsItemKey = 'VirtHelperSettings';
 let unitTypeMaintenancePages = {
     Store: ['supply'],
     "Gas station": ['supply'],
@@ -21,6 +22,7 @@ let unitTypeMaintenancePages = {
 module.exports = {
     overStockPercent,
     storageItemKey,
+    settingsItemKey,
     unitTypeMaintenancePages,
     unitMaintenanceOrder,
 };

@@ -1,4 +1,5 @@
 const globals = require('./globals');
+const settings = require('./settings');
 const DOMUtils = require('./utils/DOMUtils');
 const menuOptions = require('./automation/menuOptions');
 const storageUtils = require('./utils/storageUtils');
@@ -48,6 +49,26 @@ function addAutomationMenu() {
     // create the automation menu
     automationMenu = DOMUtils.addMenu('Automation', automationMenuOptions);
 }
+
+function addMainMenu() {
+    let virtHelperMenu = DOMUtils.createNewElement('li', {
+        innerHTML: '<span data-name="itour-menu-7">VirtHelper</span>'
+    });
+    let virtHelperSubMenu = DOMUtils.createNewElement('ul', {}, virtHelperMenu);
+    [{ text: 'Settings', func: settings.openSettingsPopup }].forEach(({ text, func }) => {
+        let menuOption = DOMUtils.createNewElement('li', {}, virtHelperSubMenu);
+        DOMUtils.createNewElement('a', {
+            href: "#",
+            innerText: text,
+            onclick: (e) => { e.preventDefault(); func && func(); return false; }
+        }, menuOption);
+    });
+
+    let mainMenuMarkerTab = document.querySelector('ul.main_menu > li:nth-last-child(4)');
+    mainMenuMarkerTab.after(virtHelperMenu);
+}
+
+addMainMenu();
 
 if (storageUtils.isMaintenanceMode()) {
     let maintenanceFunc = menuOptions.getAutomationOptions(true);
