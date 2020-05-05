@@ -1,3 +1,5 @@
+require('./exec/BabelJsxPragma.exec');
+
 const globals = require('./globals');
 const settings = require('./settings');
 const DOMUtils = require('./utils/DOMUtils');
@@ -36,7 +38,7 @@ function addPriceQualityRatio() {
     });
 
     setTimeout(() => {
-        document.querySelectorAll('table[class^="unit-list"] > tbody > tr.ordered > td:nth-child(1)').forEach(r => { r.colSpan = "10" });
+        document.querySelectorAll('table[class^="unit-list"] > tbody > tr.ordered > td:nth-child(1)').forEach(r => r.colSpan = "10");
     }, 1);
 }
 
@@ -60,7 +62,7 @@ function addMainMenu() {
         DOMUtils.createNewElement('a', {
             href: "#",
             innerText: text,
-            onclick: (e) => { e.preventDefault(); func && func(); return false; }
+            onclick: (e) => { e.preventDefault(); func && func(); return false; } // jshint ignore:line
         }, menuOption);
     });
 

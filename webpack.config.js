@@ -17,20 +17,24 @@ module.exports = {
         filename: 'virtHelperDist.js'
     },
     plugins: [
-        new webpack.BannerPlugin({ banner: banner, raw: true, entryOnly: true })
+        new webpack.BannerPlugin({ banner: banner, raw: true, entryOnly: true }),
     ],
-    // module: {
-    //     rules: [
-    //         {
-    //             test: /\.js$/,
-    //             exclude: /(node_modules|bower_components)/,
-    //             use: {
-    //                 loader: 'babel-loader',
-    //                 options: {
-    //                     presets: ['@babel/preset-env']
-    //                 }
-    //             }
-    //         }
-    //     ]
-    // }
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            },
+            {
+                test: /\.exec\.js$/,
+                use: ['script-loader']
+            }
+        ]
+    }
 };
