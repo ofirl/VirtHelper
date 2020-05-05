@@ -153,4 +153,4 @@ module.exports = {
     removeClass,
     addMenu,
     createSettingsInputSlider,
-}
+};
