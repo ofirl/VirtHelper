@@ -128,6 +128,12 @@
         "no-dupe-else-if": "error",
         "no-duplicate-imports": "error",
         "no-else-return": "off",
+        "no-empty": [
+            "warn",
+            {
+                "allowEmptyCatch": true
+            }
+        ],
         "no-empty-function": "error",
         "no-eq-null": "off",
         "no-eval": "off",
@@ -198,6 +204,14 @@
         "no-underscore-dangle": "off",
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "error",
+        "no-unused-vars": [
+            "warn",
+            {
+                "vars": "all",
+                "args": "after-used",
+                "ignoreRestSiblings": false
+            }
+        ],
         "no-use-before-define": "off",
         "no-useless-call": "error",
         "no-useless-computed-key": "error",

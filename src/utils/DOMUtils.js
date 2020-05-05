@@ -16,25 +16,25 @@ function getSelectedTab() {
     return document.querySelector('ul.tabu li.sel a').getAttribute('data-name').match(/--(.*)/)[1];
 }
 
-function openSubMenu(subMenu) {
-    subMenu = subMenus[subMenu];
-    if (currentOpenSubMenus.find((m) => m.name === subMenu.title))
-        return false;
+// function openSubMenu(subMenu) {
+//     subMenu = subMenus[subMenu];
+//     if (currentOpenSubMenus.find((m) => m.name === subMenu.title))
+//         return false;
 
-    let newMenu = addMenu(subMenu.title, subMenu.options);
-    currentOpenSubMenus.push({ name: subMenu.title, element: newMenu });
+//     let newMenu = addMenu(subMenu.title, subMenu.options);
+//     currentOpenSubMenus.push({ name: subMenu.title, element: newMenu });
 
-    return false;
-}
+//     return false;
+// }
 
-function closeSubMenu(subMenuName) {
-    let menuIndex = currentOpenSubMenus.findIndex((m) => m.name === subMenuName);
-    let menusToClose = currentOpenSubMenus.splice(menuIndex, currentOpenSubMenus.length - menuIndex);
+// function closeSubMenu(subMenuName) {
+//     let menuIndex = currentOpenSubMenus.findIndex((m) => m.name === subMenuName);
+//     let menusToClose = currentOpenSubMenus.splice(menuIndex, currentOpenSubMenus.length - menuIndex);
 
-    menusToClose.forEach(menu => {
-        menu.element.remove();
-    });
-}
+//     menusToClose.forEach(menu => {
+//         menu.element.remove();
+//     });
+// }
 
 function addClass(element, className) {
     if (element.classList.includes(className))
@@ -82,7 +82,7 @@ function addMenu(title, options, ) {
             classList: "tabs",
             href: "#",
             innerHTML: option.text,
-            onclick: option.func ? option.func : (e) => { e.preventDefault(); return openSubMenu(option.subMenu); }
+            onclick: option.func,
         }, menuItem);
     });
 
@@ -91,7 +91,6 @@ function addMenu(title, options, ) {
 }
 
 function onInputSliderChange(e, otherElement) {
-    console.log(e.target);
     let newValue = parseFloat(e.target.value);
     if (isNaN(newValue))
         e.target.value = otherElement.value;
@@ -135,11 +134,7 @@ function createSettingsInputSlider(tag, label, category, sliderMin = 0, sliderMa
         onchange: (e) => onInputSliderChange(e, input),
     }, inputSlider);
 
-    console.log(input);
-    setTimeout(() => console.log(input.value), 3000); //no
-    setTimeout(() => console.log(input.value), 6000); //no
-    setTimeout(() => console.log(document.querySelector(`#${label.toLowerCase().replace(" ", "")}-${category.toLowerCase()}-input`).value), 6000); //yes, why???? refrences?
-    setTimeout(input.addEventListener('change', (e) => onInputSliderChange(e, slider)), 1000);
+    // setTimeout(input.addEventListener('change', (e) => onInputSliderChange(e, slider)), 1000);
 
     return inputSlider;
 }
@@ -147,8 +142,8 @@ function createSettingsInputSlider(tag, label, category, sliderMin = 0, sliderMa
 module.exports = {
     createNewElement,
     getSelectedTab,
-    openSubMenu,
-    closeSubMenu,
+    // openSubMenu,
+    // closeSubMenu,
     addClass,
     removeClass,
     addMenu,

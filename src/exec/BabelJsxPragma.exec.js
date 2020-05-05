@@ -1,10 +1,10 @@
-function createJsxElement(tagName, attrs = {}, ...children) { // jshint ignore:line
+function createJsxElement(tagName, attrs = {}, ...children) { // eslint-disable-line no-unused-vars
     if (tagName === 'fragment')
         return children;
 
     let elem = document.createElement(tagName);
     for (const attrKey in attrs) {
-        if (!elem.hasOwnProperty(attrKey) && attrKey !== 'className')
+        if (!elem.hasOwnProperty(attrKey) && attrKey !== 'className') // eslint-disable-line no-prototype-builtins
             elem.setAttribute(attrKey, attrs[attrKey]);
         else
             elem[attrKey] = attrs[attrKey];

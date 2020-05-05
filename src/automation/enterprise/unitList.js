@@ -12,10 +12,7 @@ function maintenanceSettings() {
     let unitListTable = document.querySelector('table.unit_list_table');
 
     unitListTable.querySelector(':scope > thead > tr > th:last-child').after(
-        DOMUtils.createNewElement('th', {
-            innerText: 'Maint.',
-            style: 'color: #0184d0;'
-        })
+        <th style="color: #0184d0"> Maint. </th>
     );
 
     let maintenanceDisabledUnits = settings.getSettings().maintenanceDisabled;
@@ -36,7 +33,7 @@ function maintenanceSettings() {
         let unitId = row.getAttribute('data-id');
         row.querySelector('td:last-child').after(
             DOMUtils.createNewElement('td', {
-                onclick: (e) => onMaintenanceEnabledChange(unitId),
+                onclick: () => onMaintenanceEnabledChange(unitId),
                 style: 'vertical-align: middle;',
                 innerHTML: `<input type="checkbox"${maintenanceDisabledUnits.includes(unitId) ? "" : 'checked="true"'} />`
             })
@@ -85,13 +82,17 @@ function maintainUnits() {
 
                 step.done = false;
 
-                let pages = consts.unitTypeMaintenancePages[unitType];
-                if (pages) {
-                    pages.forEach(p => {
-                        window.open(url + "/" + p, '_BLANK');
-                    });
+                if (!step.opened) {
+                    let pages = consts.unitTypeMaintenancePages[unitType];
+                    if (pages) {
+                        pages.forEach(p => {
+                            window.open(url + "/" + p, '_BLANK');
+                        });
+                    }
                 }
             });
+
+            step.opened = true;
 
             if (!step.done) {
                 setTimeout(runMaintenance, 5000);

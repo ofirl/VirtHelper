@@ -29,7 +29,7 @@ function addPriceQualityRatio() {
     rows.forEach(row => {
         let price = virtUtils.parseVirtNum(row.querySelector(`td:nth-child(${priceCol + 3})`).innerText);
         let qualityElement = row.querySelector(`td:nth-child(${qualityCol + 3})`);
-        quality = virtUtils.parseVirtNum(qualityElement.innerText);
+        let quality = virtUtils.parseVirtNum(qualityElement.innerText);
 
         let ratio = parseFloat((quality / price).toFixed(3));
 
@@ -49,7 +49,8 @@ function addAutomationMenu() {
         return;
 
     // create the automation menu
-    automationMenu = DOMUtils.addMenu('Automation', automationMenuOptions);
+    let automationMenu = DOMUtils.addMenu('Automation', automationMenuOptions);
+    return automationMenu;
 }
 
 function addMainMenu() {

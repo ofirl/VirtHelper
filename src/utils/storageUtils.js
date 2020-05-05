@@ -12,6 +12,9 @@ function getStorage() {
     return JSON.parse(localStorage.getItem(consts.storageItemKey));
 }
 
+/**
+ * @param {string} id subdivision id
+ */
 function isMaintenanceMode(id) {
     id = id || globals.subdivisionId;
 
@@ -45,6 +48,35 @@ function updateSettingsObj(settingsObj) {
     localStorage.setItem(consts.settingsItemKey, JSON.stringify(settingsObj));
 }
 
+/**
+ * @returns {MessageObj[]}
+ */
+function getMessages() {
+    return getStorage().msgs || [];
+}
+
+/**
+ * @typedef {object} MessageObj
+ * @property {string} severity
+ * @property {string} text
+ */
+/**
+ * @param {MessageObj} msg 
+ */
+function addMessage(msg) {
+    let msgs = getMessages();
+    msgs.push(msg);
+
+    updateStorage({ msgs });
+}
+
+function removeMsg(msgIdx) {
+    let msgs = getMessages();
+    msgs.splice(msgIdx, 1);
+
+    updateStorage({ msgs });
+}
+
 module.exports = {
     updateStorage,
     getStorage,
@@ -53,4 +85,7 @@ module.exports = {
     updateMaintenance,
     getSettingsObj,
     updateSettingsObj,
+    getMessages,
+    addMessage,
+    removeMsg,
 };

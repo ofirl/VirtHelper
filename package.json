@@ -4,7 +4,8 @@
   "description": "Helper script for virtonomics",
   "main": "VirtHelper.js",
   "scripts": {
-    "bundle": "webpack"
+    "bundle": "webpack",
+    "eslint": "./node_modules/.bin/eslint src"
   },
   "repository": {
     "type": "git",

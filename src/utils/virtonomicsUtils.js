@@ -9,11 +9,18 @@ function parseVirtNum(virtNum) {
     return parseFloat(virtNum.replace(/ |\$/g, ""));
 }
 
-function setOrderAmount(usedLastTurn, inStock, quantityInput) {
-    let overStockPercent = settings.getSettings().overStockPercent[globals.subdivisionType] || 0;
-    let orderAmount = Math.ceil(usedLastTurn * (1 + overStockPercent) - (inStock - usedLastTurn));
-    if (orderAmount < 0)
-        orderAmount = 0;
+function setOrderAmount(usedLastTurn, inStock, purchased, quantityInput) {
+    let orderAmount;
+    if (inStock === purchased) {
+        let soldOutGrowPercent = settings.getSettings().growStockPercent[globals.subdivisionType] || 0;
+        orderAmount = Math.ceil(purchased * (1 + soldOutGrowPercent));
+    }
+    else {
+        let overStockPercent = settings.getSettings().overStockPercent[globals.subdivisionType] || 0;
+        orderAmount = Math.ceil(usedLastTurn * (1 + overStockPercent) - (inStock - usedLastTurn));
+        if (orderAmount < 0)
+            orderAmount = 0;
+    }
 
     quantityInput.value = orderAmount;
 

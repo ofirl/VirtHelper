@@ -14,14 +14,18 @@ if (subdivisionId && subdivisionId.length)
     subdivisionId = subdivisionId[0];
 
 let subdivisionName = document.querySelector('div.title > h1');
-if (subdivisionName)
-    subdivisionName = subdivisionName.innerText.split(' ')[0];
+if (subdivisionName) {
+    subdivisionName = subdivisionName.innerText.split(' ');
+    subdivisionName.pop();
+    subdivisionName = subdivisionName.join(' ');
+}
 
 let selectedTab = tabMenu ? tabMenu.querySelector('li.sel a') : null;
 if (selectedTab)
-    selectedTab = selectedTab.getAttribute('data-name').match(/--(.*)/)[1];
+    selectedTab = selectedTab.getAttribute('data-name').match(/(?:--?([^-]*))/g).pop().replace(/-/g, "");
 
-if (selectedTab === "unit_list")
+let selectedTabElement = tabMenu ? tabMenu.querySelector('li.sel a') : null;
+if (selectedTab === "unit_list" && selectedTabElement && selectedTabElement.innerText === "My business")
     subdivisionType = "Enterprise";
 
 let automationMenu;

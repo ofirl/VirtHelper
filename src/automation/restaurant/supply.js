@@ -1,4 +1,6 @@
+const notificationUtils = require('../../utils/notificationsUtils');
 const virtUtils = require('../../utils/virtonomicsUtils');
+const storageUtils = require('../../utils/storageUtils');
 
 function calculateSupplyOrders(maintenance) {
     if (maintenance) {
@@ -14,25 +16,32 @@ function calculateSupplyOrders(maintenance) {
 
     productRows.forEach(row => {
         let productName = row.querySelector(':scope > th > table > tbody > tr:nth-child(1) > td:nth-child(1) > a').innerText.trim();
-        let consumptionPerClient = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2)').innerText);
+        // let consumptionPerClient = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(2) > table > tbody > tr:nth-child(1) > td:nth-child(2)').innerText);
         let amountConsumed = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2)').innerText);
-        // let orderAmount = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(2) > table > tbody > tr:nth-child(3) > td:nth-child(2)').innerText);
+        let lastOrderedAmount = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(2) > table > tbody > tr:nth-child(3) > td:nth-child(2)').innerText);
         let amountPurchased = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(2)').innerText);
         let amountInStock = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(3) > table > tbody > tr:nth-child(1) > td:nth-child(2)').innerText);
-        let qualityInStock = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(3) > table > tbody > tr:nth-child(2) > td:nth-child(2)').innerText);
-        let primeCost = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(3) > table > tbody > tr:nth-child(3) > td:nth-child(2)').innerText);
+        // let qualityInStock = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(3) > table > tbody > tr:nth-child(2) > td:nth-child(2)').innerText);
+        // let primeCost = virtUtils.parseVirtNum(row.querySelector(':scope > td:nth-child(3) > table > tbody > tr:nth-child(3) > td:nth-child(2)').innerText);
 
         let quantityInput = row.querySelector(':scope > td:nth-child(5) > input');
 
+        if (lastOrderedAmount > amountPurchased)
+            notificationUtils.addSupplyShortageNotification(productName);
+
         // no sales and no stock - new subdivision
-        if (amountInStock === 0 && amountConsumed === 0)
+        if (amountInStock === 0 && amountConsumed === 0) {
+            notificationUtils.addNoSaleStockNotification(productName);
             return;
+        }
 
         // no sales - if it's the second turn it's ok, otherwise it's bad
-        if (amountConsumed === 0)
+        if (amountConsumed === 0) {
+            notificationUtils.addNoSaleNotification(productName);
             return;
+        }
 
-        virtUtils.setOrderAmount(amountConsumed, amountInStock, quantityInput);
+        virtUtils.setOrderAmount(amountConsumed, amountInStock, amountPurchased, quantityInput);
     });
 
     if (maintenance)
