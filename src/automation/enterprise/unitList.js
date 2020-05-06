@@ -83,10 +83,12 @@ function maintainUnits() {
                 step.done = false;
 
                 if (!step.opened) {
+                    step.pages = [];
                     let pages = consts.unitTypeMaintenancePages[unitType];
                     if (pages) {
                         pages.forEach(p => {
-                            window.open(url + "/" + p, '_BLANK');
+                            step.pages.push(DOMUtils.openEmbeded(`${url}/${p}`));
+                            // window.open(url + "/" + p, '_BLANK');
                         });
                     }
                 }
@@ -97,6 +99,10 @@ function maintainUnits() {
             if (!step.done) {
                 setTimeout(runMaintenance, 5000);
                 return;
+            }
+            else {
+                while (step.pages.length)
+                    step.pages.shift().remove();
             }
         }
 

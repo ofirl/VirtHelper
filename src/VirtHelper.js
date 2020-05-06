@@ -71,8 +71,6 @@ function addMainMenu() {
     mainMenuMarkerTab.after(virtHelperMenu);
 }
 
-addMainMenu();
-
 if (storageUtils.isMaintenanceMode()) {
     let maintenanceFunc = menuOptions.getAutomationOptions(true);
     if (maintenanceFunc && maintenanceFunc(true))
@@ -81,6 +79,7 @@ if (storageUtils.isMaintenanceMode()) {
 else {
     if (globals.tabMenu) {
         addAutomationMenu();
+        addMainMenu();
     }
     else if (window.location.href.match(/.*unit\/supply\/.*\/step2/)) {
         addPriceQualityRatio();

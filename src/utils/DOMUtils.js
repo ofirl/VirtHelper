@@ -12,29 +12,13 @@ function createNewElement(tag = 'div', attrs = {}, parent = null) {
     return newElement;
 }
 
+function openEmbeded(url) {
+    return document.body.appendChild(<embed src={url} />);
+}
+
 function getSelectedTab() {
     return document.querySelector('ul.tabu li.sel a').getAttribute('data-name').match(/--(.*)/)[1];
 }
-
-// function openSubMenu(subMenu) {
-//     subMenu = subMenus[subMenu];
-//     if (currentOpenSubMenus.find((m) => m.name === subMenu.title))
-//         return false;
-
-//     let newMenu = addMenu(subMenu.title, subMenu.options);
-//     currentOpenSubMenus.push({ name: subMenu.title, element: newMenu });
-
-//     return false;
-// }
-
-// function closeSubMenu(subMenuName) {
-//     let menuIndex = currentOpenSubMenus.findIndex((m) => m.name === subMenuName);
-//     let menusToClose = currentOpenSubMenus.splice(menuIndex, currentOpenSubMenus.length - menuIndex);
-
-//     menusToClose.forEach(menu => {
-//         menu.element.remove();
-//     });
-// }
 
 function addClass(element, className) {
     if (element.classList.includes(className))
@@ -141,9 +125,8 @@ function createSettingsInputSlider(tag, label, category, sliderMin = 0, sliderMa
 
 module.exports = {
     createNewElement,
+    openEmbeded,
     getSelectedTab,
-    // openSubMenu,
-    // closeSubMenu,
     addClass,
     removeClass,
     addMenu,
