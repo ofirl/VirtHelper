@@ -1,6 +1,7 @@
 // Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings -- Expert Settings
 // Might break the script!!! Change only if you know what you are doing!!!
 const unitMaintenanceOrder = ['Store', 'Gas station', 'Restaurant', 'Warehouse'];
+const pricePolicyMarketShareTolerance = 2;
 
 // Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts -- Consts
 const storageItemKey = 'VirtHelper';
@@ -22,6 +23,7 @@ module.exports = {
     // overStockPercent,
     // growStockPercent,
     unitMaintenanceOrder,
+    pricePolicyMarketShareTolerance,
     storageItemKey,
     settingsItemKey,
     unitTypeMaintenancePages,

@@ -31,12 +31,15 @@ function maintenanceSettings() {
     let unitRows = unitListTable.querySelectorAll(':scope > tbody > tr');
     unitRows.forEach(row => {
         let unitId = row.getAttribute('data-id');
+
+        let checkedAtt = {};
+        if (maintenanceDisabledUnits.includes(unitId))
+            checkedAtt.checked = 'true';
+
         row.querySelector('td:last-child').after(
-            DOMUtils.createNewElement('td', {
-                onclick: () => onMaintenanceEnabledChange(unitId),
-                style: 'vertical-align: middle;',
-                innerHTML: `<input type="checkbox"${maintenanceDisabledUnits.includes(unitId) ? "" : 'checked="true"'} />`
-            })
+            <td style="vertical-align: middle;" onclick={() => onMaintenanceEnabledChange(unitId)}>
+                <input type="checkbox" {...checkedAtt} />
+            </td>
         );
     });
 }

@@ -39,6 +39,9 @@ function updateMaintenance(maintenanceObj) {
     updateStorage(state);
 }
 
+/**
+ * @returns {SettingsObj}
+ */
 function getSettingsObj() {
     return JSON.parse(localStorage.getItem(consts.settingsItemKey));
 }
@@ -77,6 +80,17 @@ function removeMsg(msgIdx) {
     updateStorage({ msgs });
 }
 
+function getPolicy() {
+    return getSettingsObj().policies[globals.subdivisionId];
+}
+
+function updatePolicy(policyObj) {
+    let currentSettings = getSettingsObj();
+    currentSettings.policies[globals.subdivisionId] = policyObj;
+
+    updateSettingsObj(currentSettings);
+}
+
 module.exports = {
     updateStorage,
     getStorage,
@@ -88,4 +102,6 @@ module.exports = {
     getMessages,
     addMessage,
     removeMsg,
+    getPolicy,
+    updatePolicy,
 };

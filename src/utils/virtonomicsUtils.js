@@ -6,7 +6,7 @@ function parseVirtNum(virtNum) {
     if (virtNum == null)
         return null;
 
-    return parseFloat(virtNum.replace(/ |\$/g, ""));
+    return parseFloat(virtNum.replace(/ |\$|%/g, ""));
 }
 
 function setOrderAmount(usedLastTurn, inStock, purchased, quantityInput) {
@@ -25,6 +25,20 @@ function setOrderAmount(usedLastTurn, inStock, purchased, quantityInput) {
     quantityInput.value = orderAmount;
 
     return orderAmount;
+}
+
+function setPrices(currentPrice, currentMarketShare, priceInput, desiredMarketShare, changePercent) {
+    let newPrice = currentPrice;
+
+    // high market share - raise prices
+    if (currentMarketShare > desiredMarketShare + consts.pricePolicyMarketShareTolerance)
+        newPrice = currentPrice * (1 + changePercent);
+    // low market share - lower prices
+    else if (currentMarketShare < desiredMarketShare - consts.pricePolicyMarketShareTolerance)
+        newPrice = currentPrice * (1 - changePercent);
+
+    priceInput.value = newPrice;
+    return newPrice;
 }
 
 function calcSalary(sn, sc, kn, kc, kr) {
@@ -109,4 +123,7 @@ function calcBaseRetailPrice2(myQuality, localPrice, localQuality) {
 module.exports = {
     parseVirtNum,
     setOrderAmount,
+    setPrices,
+    calcBaseRetailPrice,
+    calcBaseRetailPrice2,
 };

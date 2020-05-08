@@ -3,7 +3,31 @@ const storageUtils = require('./utils/storageUtils');
 const DOMUtils = require('./utils/DOMUtils');
 
 if (!localStorage.getItem(consts.settingsItemKey))
-    localStorage.setItem(consts.settingsItemKey, '{}');
+    localStorage.setItem(consts.settingsItemKey, JSON.stringify({ policies: {} }));
+
+/**
+ * @typedef Policy
+ */
+let defaultPolicy = {
+    supply: {
+        overStock: 0.2,
+        grow: 0.2,
+    },
+    pricing: {
+        strategy: 'marketShare',
+        args: { target: 10, changePercent: 3 },
+    },
+    training: {
+        investmentReturnTime: 365,
+    },
+    equipment: {
+        repairThreshold: 0.5,
+    },
+    advertising: {
+        strategy: 'population',
+        args: 3,
+    },
+};
 
 /**
  * @typedef {{
@@ -40,7 +64,8 @@ let growStockPercent = { // sold out grow
  * @property {overStockPercent} overStockPercent
  * @property {growStockPercent} growStockPercent
  * @property {string[]} maintenanceDisabled
- * 
+ */
+/**
  * @returns {SettingsObj}
  */
 function getDefaultSettings() {

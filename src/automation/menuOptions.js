@@ -1,6 +1,7 @@
 const globals = require('../globals');
 const enterpriseUnitList = require('./enterprise/unitList');
 const storeSupply = require('./store/supply');
+const storeTradehall = require('./store/tradehall');
 const restaurantSupply = require('./restaurant/supply');
 const warehouseSupply = require('./warehouse/supply');
 
@@ -33,16 +34,17 @@ let automationOptions = {
         },
     },
     Store: {
-        // trading_hall: [
-        //     {
-        //         text: 'Update data',
-        //         func: (e) => {
-        //             e.preventDefault();
-        //             updateTradeHallData();
-        //             return false;
-        //         }
-        //     }
-        // ],
+        trading_hall: {
+            maintenance: (arg) => {
+                return storeTradehall.calculatePrices(arg);
+            },
+            options: [
+                {
+                    text: 'Calculate Prices',
+                    func: menuClick(storeTradehall.calculatePrices),
+                }
+            ],
+        },
         supply: {
             maintenance: (arg) => {
                 return storeSupply.calculateStoreSupplyOrders(arg);
